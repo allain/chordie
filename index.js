@@ -2,26 +2,29 @@ var _ = require('lodash');
 
 var DecisionTree = require('./lib/decision-tree');
 
-function guessKey(chords) {
-  return rateKeys(chords)[0];
+function guessKey(chords) {  
+  var ratings = rateKeys(chords);
+  return ratings.length ? ratings[0].key : null;
 }
 
+ var keyFingerprints = {
+  'C': ['C', 'G', 'F', 'Am', 'Dm', 'Em', 'Bdim'],
+  'D': ['D', 'A', 'G', 'Bm', 'Em', 'F#m', 'C#dim'],
+  'E': ['E', 'B', 'A', 'C#m', 'F#m', 'G#m', 'D#dim'],
+  'F': ['F', 'C', 'A#', 'Dm', 'Gm', 'Am', 'Edim'],
+  'G': ['G', 'D', 'C', 'Em', 'Am', 'Bm', 'F#dim'],
+  'A': ['A', 'E', 'D', 'F#m', 'Bm', 'C#m', 'G#dim'],
+  'B': ['B', 'F#', 'E', 'Em', 'C#m', 'D#m', 'A#dim'],
+  'I': ['I', 'V', 'IV', 'vi', 'iii', 'ii', 'VIIdim']
+};
+
 function rateKeys(chords) {
-  var keyFingerprints = {
-    'C': ['C', 'G', 'F', 'Am', 'Dm', 'Em', 'Bdim'],
-    'D': ['D', 'A', 'G', 'Bm', 'Em', 'F#m', 'C#dim'],
-    'E': ['E', 'B', 'A', 'C#m', 'F#m', 'G#m', 'D#dim'],
-    'F': ['F', 'C', 'A#', 'Dm', 'Gm', 'Am', 'Edim'],
-    'G': ['G', 'D', 'C', 'Em', 'Am', 'Bm', 'F#dim'],
-    'A': ['A', 'E', 'D', 'F#m', 'Bm', 'C#m', 'G#dim'],
-    'B': ['B', 'F#', 'E', 'Em', 'C#m', 'D#m', 'A#dim'],
-    'I': ['I', 'V', 'IV', 'vi', 'iii', 'ii', 'VIIdim']
-  };
-
-
   var scores = [];
 
   var sample = _.first(cleanupChords(chords), 20);
+  if (!Array.isArray(sample) || sample.length === 0) {
+    return [];
+  }
 
   Object.keys(keyFingerprints).forEach(function(key) {
     var keyScore = rateKey(sample, keyFingerprints[key]);
@@ -42,10 +45,8 @@ function rateKeys(chords) {
       return b.score - a.score;
     }
   });
-
-  // console.log(scores);
-
-  return scores ? scores[0].key : null;
+ 
+  return scores;
 }
 
 function rateKey(sample, keyChords) {
@@ -74,7 +75,7 @@ function cleanupChords(chords) {
     chords = chords.split(/\s+/);
   }
 
-  return  chords.map(function(chord) {
+  return chords.map(function(chord) {
     chord = chord.replace('maj', '');
     chord = chord.replace('M7', '');
     return chord.replace(/^([A-G][#b]?m?).*$/g, '$1');

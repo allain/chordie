@@ -23,6 +23,11 @@ describe('chordie', function() {
     it('should find normalized key', function() {
       assert.equal('I', chordie.guessKey('ii V I iii'));
     });
+    
+    it('should return null when no chords given', function() {
+      assert.isNull(chordie.guessKey(''));
+      assert.isNull(chordie.guessKey([]));
+    });
   });
   
   describe('normalizeChords', function() {
