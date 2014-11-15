@@ -7,7 +7,7 @@ function guessKey(chords) {
   return ratings.length ? ratings[0].key : null;
 }
 
- var keyFingerprints = {
+var keyFingerprints = {
   'C': ['C', 'G', 'F', 'Am', 'Dm', 'Em', 'Bdim'],
   'D': ['D', 'A', 'G', 'Bm', 'Em', 'F#m', 'C#dim'],
   'E': ['E', 'B', 'A', 'C#m', 'F#m', 'G#m', 'D#dim'],
@@ -19,21 +19,22 @@ function guessKey(chords) {
 };
 
 function rateKeys(chords) {
-  var scores = [];
-
   var sample = _.first(cleanupChords(chords), 20);
+  
   if (!Array.isArray(sample) || sample.length === 0) {
-    return [];
+    return [{
+        key: 'I',
+        score: 100
+    }];
   }
 
-  Object.keys(keyFingerprints).forEach(function(key) {
-    var keyScore = rateKey(sample, keyFingerprints[key]);
-    if (keyScore > 0) {
-      scores.push({
-        key: key,
-        score: keyScore
-      });
-    }
+  var scores = _.map(keyFingerprints, function(fingerprint, key) {
+    return {
+      key: key,
+      score: rateKey(sample, fingerprint)
+    };
+  }).filter(function(c) {
+    return c.score > 0;
   });
 
   scores.sort(function(a, b) {
@@ -58,7 +59,7 @@ function rateKey(sample, keyChords) {
       // Earlier in the chord fingerprint is found, the  more important it is to that key
       keyScore += (keyChords.length - matchIndex);
     } else {
-      keyScore--;
+      keyScore --; 
     }
   });
 
@@ -74,9 +75,11 @@ function cleanupChords(chords) {
   if (_.isString(chords)) {
     chords = chords.split(/\s+/);
   }
-
-  return chords.map(function(chord) {
-    chord = chord.replace('maj', '');
+  
+  return chords.filter(function(c) {
+    return !!c;
+  }).map(function(chord) {
+    chord = chord.replace('maj7', '');
     chord = chord.replace('M7', '');
     return chord.replace(/^([A-G][#b]?m?).*$/g, '$1');
   });
@@ -102,16 +105,16 @@ function noteOffset(note) {
   var match = /^([A-G])([#b]?)/.exec(note);
   if (!match)
     return -1;
-
+  
   var letter = match[1];
   var bend = match[2];
 
   var offset = offsets[letter];
 
   if (bend === '#') {
-    offset++;
+    offset ++;
   } else if (bend === 'b') {
-    offset--;
+    offset --;
   }
 
   return offset;
@@ -122,7 +125,7 @@ var offsetNames = {
   1: 'IIb',
   2: 'II',
   3: 'IIIb',
-  4: 'IVb',
+  4: 'III',
   5: 'IV',
   6: 'Vb',
   7: 'V',
@@ -138,6 +141,12 @@ function normalize(chords, key) {
     chords = chords.split(/\s+/);
   }
 
+  chords = chords.filter(function(c) { return !!c; });
+
+  if (chords.length === 0) {
+    return chords;
+  }
+
   if (key === 'I') {
     return chords;
   }
@@ -146,11 +155,10 @@ function normalize(chords, key) {
   var normalized = [];
 
   chords.forEach(function(c) {
-    var chordOffset = noteOffset(c);
+    var chordOffset = noteOffset(c);    
 
     var chordDelta = (12 + chordOffset - keyOffset) % 12;
-
-    var match = /^([A-G])([#b]?)(m|dom|maj)?(.*)$/g.exec(c);
+    var match = /^([A-G])([#b]?)(maj|dom|m)?(.*)$/g.exec(c);
     var quality = match[3];
 
     var chordLabel = offsetNames[chordDelta];
@@ -158,6 +166,8 @@ function normalize(chords, key) {
       chordLabel = chordLabel.toLowerCase();
     } else if (quality === 'dom') {
       chordLabel += 'dom';
+    } else if (quality === 'maj') {
+      chordLabel += 'maj';
     }
 
     chordLabel += match[4];
@@ -183,12 +193,15 @@ function denormalize(chords, key) {
 
   var keyOffset = offsets[key];
   if (keyOffset === undefined) {
-    return [];
+    throw new Error('Invalid Key: ' + key); 
   }
 
   var result = [];
   chords.forEach(function(chord) {
-    var match = /^([VI]+)([#b]?)(.*)$/g.exec(chord);        
+    var match = /^([VI]+)([#b]?)(.*)$/ig.exec(chord);        
+    if (!match) {
+      throw new Error('Invalid Chord Name: ' + chord);
+    }
     
     var chordOffset;
     _.forIn(offsetNames, function(name, offset) {
@@ -228,18 +241,37 @@ function buildPredictor(songs, precision) {
         step = step.step(c);
       });
       songChords.shift();
-    } while (songChords.length >= precision);
+    } while (songChords.length > 3);
   });
 
-  return function(sequence) {
-    var sequenceKey = guessKey(sequence);
-    var predictions = decisionTree.predictNext(normalize(sequence));    
+  return function(sequence, key) {
+    if (_.isString(sequence)) {
+      sequence = sequence.split(/[\s,]/g);
+    }
+    // clone sequence
+    sequence = [].concat(sequence);    
+    
+    key = key || guessKey(sequence);   
+                    
+    var predictions;
+    do {      
+      predictions = decisionTree.predictNext(normalize(sequence));      
+      if (predictions.length === 0) {
+        sequence.shift(); // Try shortening the sequence
+      }
+    } while (predictions.length === 0 && sequence.length > 0);
+    
     predictions.forEach(function(prediction) {
-      prediction.name = denormalize(prediction.name, sequenceKey)[0] || prediction.name;
+      prediction.name = denormalize(prediction.name, key)[0] || prediction.name;      
       delete prediction.count;
-    });
+    });        
+    
+    //predictions.effectiveProgression = sequence;
 
-    return predictions;    
+    return {
+      seed: sequence,
+      chords: predictions
+    };
   };
 }
 
