@@ -102,11 +102,11 @@ function findFirst(sample, chords) {
 var offsets = {'A': 5, 'B': 7, 'C': 8, 'D': 10, 'E': 0, 'F': 1, 'G': 3};
 
 function noteOffset(note) {
-  var match = /^([A-G])([#b]?)/.exec(note);
+  var match = /^([A-Ga-g])([#b]?)/.exec(note);
   if (!match)
     return -1;
   
-  var letter = match[1];
+  var letter = match[1].toUpperCase();
   var bend = match[2];
 
   var offset = offsets[letter];
@@ -158,7 +158,11 @@ function normalize(chords, key) {
     var chordOffset = noteOffset(c);    
 
     var chordDelta = (12 + chordOffset - keyOffset) % 12;
-    var match = /^([A-G])([#b]?)(maj|dom|m)?(.*)$/g.exec(c);
+    var match = /^([A-Ga-g])([#b]?)(maj|dom|m)?(.*)$/g.exec(c);
+    if (!match) {      
+      return;
+    }           
+    
     var quality = match[3];
 
     var chordLabel = offsetNames[chordDelta];
@@ -215,6 +219,7 @@ function denormalize(chords, key) {
     if (match[1] === match[1].toLowerCase()) {
       chordName += 'm';
     }
+    console.log(match);
     chordName += (match[3] || '');    
     result.push(chordName);
   });

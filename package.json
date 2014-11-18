@@ -1,6 +1,6 @@
 {
   "name": "chordie",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Simple tools for dealing with music chords and key analysis",
   "main": "index.js",
   "scripts": {
