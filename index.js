@@ -222,8 +222,9 @@ function denormalize(chords, key) {
   return result;
 }
 
-function buildPredictor(songs, precision) {
+function buildPredictor(songs, precision, minPrecision) {
   precision = precision || 10;
+  minPrecision = minPrecision || 3;
 
   var decisionTree = new DecisionTree();
 
@@ -241,7 +242,7 @@ function buildPredictor(songs, precision) {
         step = step.step(c);
       });
       songChords.shift();
-    } while (songChords.length > 3);
+    } while (songChords.length > minPrecision);
   });
 
   return function(sequence, key) {
