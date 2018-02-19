@@ -15,5 +15,7 @@ $ npm install chordie
 ## Example Usage
 
 ``` js
-var chordie = require('chordie');
+const chordie = require('chordie')
+
+chordie.guessKey('C F G') // returns C
 ```
