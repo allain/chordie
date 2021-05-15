@@ -30,13 +30,7 @@ const offsetNames = [
   'VII'
 ]
 
-export function denormalize(chords, key) {
-  if (typeof chords === 'string') {
-    chords = chords.split(/\s+/)
-  }
-
-  if (!Array.isArray(chords)) throw new Error('chords are not an array')
-
+export function denormalizeChords(chords, key) {
   if (key === 'I') return chords
 
   const keyOffset = offsets[key]

@@ -18,27 +18,30 @@ const DEFAULT_RATINGS = [
   }
 ]
 
-const cleanupChords = (chords) =>
-  (Array.isArray(chords) ? chords : chords.split(/\s+/))
-    .filter(Boolean)
-    .map((c) =>
-      c
-        .replace('maj7', '')
-        .replace('M7', '')
-        .replace(/^([A-G][#b]?m?).*$/g, '$1')
-    )
-
-const findFirst = (sample, chords) =>
-  chords.reduce((result, c) => (result === -1 ? sample.indexOf(c) : result), -1)
-
-export const guessKey = (chords) => {
+export function guessKey(chords) {
   return (rateKeys(chords)[0] || { key: null }).key
+}
+
+function cleanupChords(chords) {
+  return chords.filter(Boolean).map((c) =>
+    c
+      .replace('maj7', '')
+      .replace('M7', '')
+      .replace(/^([A-G][#b]?m?).*$/g, '$1')
+  )
+}
+
+function findFirst(sample, chords) {
+  return chords.reduce(
+    (result, c) => (result === -1 ? sample.indexOf(c) : result),
+    -1
+  )
 }
 
 function rateKeys(chords) {
   const sample = firstN(cleanupChords(chords), 20)
 
-  if (!Array.isArray(sample) || sample.length === 0) return DEFAULT_RATINGS
+  if (sample.length === 0) return DEFAULT_RATINGS
 
   return Object.entries(keyFingerprints)
     .map(([key, fingerprint]) => ({
@@ -54,8 +57,6 @@ function rateKeys(chords) {
     )
 }
 
-const sum = (arr) => arr.reduce((total, x) => total + x, 0)
-
 function rateKey(sample, keyChords) {
   let keyScore = sum(
     sample.map((c) => {
@@ -68,4 +69,8 @@ function rateKey(sample, keyChords) {
   return (
     keyScore + (keyScore > 0 && sample.length - findFirst(sample, keyChords))
   )
+}
+
+function sum(arr) {
+  return arr.reduce((total, x) => total + x, 0)
 }

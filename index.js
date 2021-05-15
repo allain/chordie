@@ -1,7 +1,7 @@
-const guessKey = require('./lib/guess-key')
-const guessChord = require('./lib/guess-chord')
-const normalize = require('./lib/normalize-chords')
-const denormalize = require('./lib/denormalize-chords')
+const guessKey = require('./src/guess-key.mjs')
+const guessChord = require('./src/guess-chord.mjs')
+const normalize = require('./src/normalize-chords.mjs')
+const denormalize = require('./src/denormalize-chords.mjs')
 
 module.exports = {
   normalize: normalize,

@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai/esm/chai.js'
-import { DecisionTree } from '../src/decision-tree.mjs'
+import { DecisionTree } from '../src/DecisionTree.mjs'
 
 describe('DecisionTree', () => {
   it('create can be created', () => {
