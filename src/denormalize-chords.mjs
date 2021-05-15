@@ -1,5 +1,3 @@
-const _ = require('lodash')
-
 const offsets = { A: 5, B: 7, C: 8, D: 10, E: 0, F: 1, G: 3 }
 
 const sharpNames = [
@@ -32,25 +30,25 @@ const offsetNames = [
   'VII'
 ]
 
-function denormalize(chords, key) {
-  if (_.isString(chords)) {
+export function denormalize(chords, key) {
+  if (typeof chords === 'string') {
     chords = chords.split(/\s+/)
   }
+
+  if (!Array.isArray(chords)) throw new Error('chords are not an array')
 
   if (key === 'I') return chords
 
   const keyOffset = offsets[key]
-  if (keyOffset === undefined) {
-    throw new Error('Invalid Key: ' + key)
-  }
+  if (keyOffset === undefined) throw new Error('Invalid Key: ' + key)
 
   const result = []
-  chords.forEach(chord => {
+  chords.forEach((chord) => {
     const match = /^([VI]+)([#b]?)(.*)$/gi.exec(chord)
     if (!match) throw new Error('Invalid Chord Name: ' + chord)
 
     let chordOffset
-    _.forIn(offsetNames, (name, offset) => {
+    offsetNames.forEach((name, offset) => {
       if (name === match[1].toUpperCase() + match[2]) {
         chordOffset = parseInt(offset, 10)
         return false
@@ -68,5 +66,3 @@ function denormalize(chords, key) {
 
   return result
 }
-
-module.exports = denormalize

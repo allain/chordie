@@ -1,6 +1,5 @@
-const _ = require('lodash')
 
-const guessKey = require('./guess-key')
+import {guessKey} from './guess-key.mjs'
 
 const offsets = { A: 5, B: 7, C: 8, D: 10, E: 0, F: 1, G: 3 }
 
@@ -37,9 +36,9 @@ function noteOffset(note) {
   return offset
 }
 
-function normalize(chords, key) {
+export function normalizeChords(chords, key) {
   key = key || guessKey(chords)
-  if (_.isString(chords)) {
+  if (typeof chords === 'string') {
     chords = chords.split(/\s+/)
   }
 
@@ -78,4 +77,3 @@ function normalize(chords, key) {
   return normalized
 }
 
-module.exports = normalize
