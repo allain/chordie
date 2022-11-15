@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4",
-    "chai": "^4.3.4",
+    "chai": "^4.3.7",
     "mocha": "^8.4.0"
   }
 }
