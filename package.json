@@ -21,8 +21,12 @@
     "url": "https://github.com/allain/chordie/issues"
   },
   "devDependencies": {
-    "@esm-bundle/chai": "^4.3.4",
     "chai": "^4.3.7",
-    "mocha": "^8.4.0"
+    "mocha": "^10.1.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "minimatch@<3.0.5": ">=3.0.5"
+    }
   }
 }

@@ -1,5 +1,4 @@
-
-import {guessKey} from './guess-key.mjs'
+import { guessKey } from './guess-key.mjs'
 
 const offsets = { A: 5, B: 7, C: 8, D: 10, E: 0, F: 1, G: 3 }
 
@@ -42,14 +41,14 @@ export function normalizeChords(chords, key) {
     chords = chords.split(/\s+/)
   }
 
-  chords = chords.filter(c => !!c)
+  chords = chords.filter((c) => !!c)
 
   if (chords.length === 0 || key === 'I') return chords
 
   const keyOffset = noteOffset(key)
   const normalized = []
 
-  chords.forEach(c => {
+  chords.forEach((c) => {
     const chordOffset = noteOffset(c)
 
     const chordDelta = (12 + chordOffset - keyOffset) % 12
@@ -76,4 +75,3 @@ export function normalizeChords(chords, key) {
 
   return normalized
 }
-

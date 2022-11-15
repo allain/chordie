@@ -8,13 +8,13 @@ Simple tools for dealing with music chords
 
 This module is installed via npm:
 
-``` bash
+```bash
 $ npm install chordie
 ```
 
 ## Example Usage
 
-``` js
+```js
 const chordie = require('chordie')
 
 chordie.guessKey('C F G') // returns C

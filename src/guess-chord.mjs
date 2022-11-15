@@ -1,7 +1,7 @@
 import { guessKey } from './guess-key.mjs'
-import {DecisionTree} from './DecisionTree.mjs'
-import {normalizeChords } from './normalize-chords.mjs'
-import {denormalizeChords} from './denormalize-chords.mjs'
+import { DecisionTree } from './DecisionTree.mjs'
+import { normalizeChords } from './normalize-chords.mjs'
+import { denormalizeChords } from './denormalize-chords.mjs'
 
 import { isString, firstN } from './utils.mjs'
 
@@ -48,7 +48,8 @@ function buildPredictor(songs, precision, minPrecision) {
     } while (predictions.length === 0 && sequence.length > 0)
 
     predictions.forEach((prediction) => {
-      prediction.name = denormalizeChords([prediction.name], key)[0] || prediction.name
+      prediction.name =
+        denormalizeChords([prediction.name], key)[0] || prediction.name
       delete prediction.count
     })
 

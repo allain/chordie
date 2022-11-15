@@ -1,4 +1,4 @@
-import { expect } from '@esm-bundle/chai/esm/chai.js'
+import { expect } from 'chai'
 
 import { guessKey } from '../src/guess-key.mjs'
 
@@ -7,8 +7,8 @@ describe('guess-key', function () {
     expect(guessKey(['C', 'F', 'G', 'Am', 'Em'])).to.deep.equal('C'))
 
   it('should prefer the first chords it encounters when guessing', () => {
-    expect(guessKey(['C','F','G','D'])).to.deep.equal('C')
-    expect(guessKey(['G','F','C','D'])).to.deep.equal('G')
+    expect(guessKey(['C', 'F', 'G', 'D'])).to.deep.equal('C')
+    expect(guessKey(['G', 'F', 'C', 'D'])).to.deep.equal('G')
   })
 
   it('should find in simple cases', () =>

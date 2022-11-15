@@ -1,12 +1,20 @@
-import {expect} from '@esm-bundle/chai/esm/chai.js'
+import { expect } from 'chai'
 import { denormalizeChords } from '../src/denormalize-chords.mjs'
 
 describe('denormalize-chords', () => {
   it('should support simple case', () =>
-    expect(denormalizeChords(['I', 'IV', 'V'], 'C')).to.deep.equal(['C', 'F', 'G']))
+    expect(denormalizeChords(['I', 'IV', 'V'], 'C')).to.deep.equal([
+      'C',
+      'F',
+      'G'
+    ]))
 
   it('should support specifying a key', () =>
-    expect(denormalizeChords(['I', 'IV', 'V'], 'C')).to.deep.equal(['C', 'F', 'G']))
+    expect(denormalizeChords(['I', 'IV', 'V'], 'C')).to.deep.equal([
+      'C',
+      'F',
+      'G'
+    ]))
 
   it('should support specifying a key that is not the guessed one', () =>
     expect(denormalizeChords(['IV', 'I'], 'G')).to.deep.equal(['C', 'G']))

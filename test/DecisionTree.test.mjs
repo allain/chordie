@@ -1,4 +1,4 @@
-import { expect } from '@esm-bundle/chai/esm/chai.js'
+import { expect } from 'chai'
 import { DecisionTree } from '../src/DecisionTree.mjs'
 
 describe('DecisionTree', () => {
